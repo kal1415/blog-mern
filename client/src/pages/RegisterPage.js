@@ -1,12 +1,10 @@
 import { Button, Flex, Heading, Input, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { useState } from "react";
 
 export default function RegisterPage() {
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
   const onSubmit = async (data) => {
