@@ -1,21 +1,38 @@
-import { Button, Flex, Heading, Input, Text } from "@chakra-ui/react";
+import { Button, Flex, Heading, Input, Text, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 
 export default function RegisterPage() {
+  const toast = useToast();
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
   const onSubmit = async (data) => {
-    console.log(data);
-    await fetch("http://localhost:4000/register", {
+    const res = await fetch("http://localhost:4000/register", {
       body: JSON.stringify(data),
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
     });
+    if (res.ok) {
+      toast({
+        title: "User registered successfully",
+        status: "success",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+    } else {
+      toast({
+        title: "User registration failed",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+        position: "top",
+      });
+    }
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
