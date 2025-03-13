@@ -1,12 +1,18 @@
 import { Button, Flex, Heading, Input, useToast, Text } from "@chakra-ui/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Navigate } from "react-router";
+import { UserContext } from "../UserContext";
 
 export default function LoginPage() {
-  const [navigate,setNavigate] = useState(false);
+  const [navigate, setNavigate] = useState(false);
+  const { setUserInfo } = useContext(UserContext);
   const toast = useToast();
-  const {register,handleSubmit,formState:{errors}} = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
   const onSubmit = async (data) => {
     const res = await fetch("http://localhost:4000/login", {
       body: JSON.stringify(data),
@@ -14,10 +20,13 @@ export default function LoginPage() {
       headers: {
         "Content-Type": "application/json",
       },
-      credentials:'include'
+      credentials: "include",
     });
     if (res.ok) {
-      setNavigate(true)
+      res.json().then((userInfo) => {
+        setUserInfo(userInfo);
+        setNavigate(true);
+      });
       toast({
         title: "User logged in successfully",
         status: "success",
@@ -25,7 +34,6 @@ export default function LoginPage() {
         isClosable: true,
         position: "top",
       });
-      
     } else {
       toast({
         title: "User login failed",
@@ -36,18 +44,32 @@ export default function LoginPage() {
       });
     }
   };
-  if(navigate){
-    return <Navigate to={'/'}/>
+  if (navigate) {
+    return <Navigate to={"/"} />;
   }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Flex justify="center" align="center" direction="column" gap={2}>
         <Heading size="lg"> Login </Heading>
-        <Input placeholder="Email" type="email" {...register('email',{required:true})}/>
+        <Input
+          placeholder="Email"
+          type="email"
+          {...register("email", { required: true })}
+        />
         {errors.email && <Text color="red.600">Email is required</Text>}
-        <Input placeholder="Password" type="password" {...register('password',{required:true})}/>
+        <Input
+          placeholder="Password"
+          type="password"
+          {...register("password", { required: true })}
+        />
         {errors.password && <Text color="red.600">Password is required</Text>}
-        <Button w={"full"} bg="black" color={"white"} colorScheme="black" type="submit">
+        <Button
+          w={"full"}
+          bg="black"
+          color={"white"}
+          colorScheme="black"
+          type="submit"
+        >
           Login
         </Button>
       </Flex>

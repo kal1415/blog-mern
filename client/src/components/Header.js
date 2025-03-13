@@ -1,17 +1,28 @@
 import { Box, Button, Flex, Link } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
+import { UserContext } from "../UserContext";
 
 export default function Header() {
-  const [username, setUserName] = useState(null);
+  const {userInfo,setUserInfo} = useContext(UserContext);
   useEffect(() => {
     fetch("http://localhost:4000/profile", {
       credentials: "include",
     }).then((res) =>
       res.json().then((userInfo) => {
-        setUserName(userInfo.email);
+        setUserInfo(userInfo);
       })
     );
   }, []);
+
+  function logout(){
+    fetch('http://localhost:4000/logout',{
+      credentials:'include',
+      method:'POST'
+    });
+    setUserInfo(null)
+  }
+
+  const username = userInfo?.email;
 
   return (
     <Box maxW="800px" m="0px auto" p="10px">
@@ -46,17 +57,17 @@ export default function Header() {
             <>
               <Button
                 as="a"
+                href='/create'
                 _hover={{
                   cursor: "pointer",
                 }}
-                // href="/login"
                 bg={"black"}
                 color={"white"}
                 colorScheme="black"
               >
                 Create new post
               </Button>
-              <Button as="a" href="">
+              <Button as="a" href="" onClick={logout}>
                 Logout
               </Button>
             </>
