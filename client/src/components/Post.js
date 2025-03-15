@@ -6,8 +6,22 @@ import {
   Card,
   CardBody,
   Flex,
+  Box,
 } from "@chakra-ui/react";
-export default function Post() {
+import { Link } from "react-router";
+import { format } from "date-fns";
+export const serverURL = "http://localhost:4000";
+
+export default function Post({
+  title,
+  summary,
+  cover,
+  content,
+  createdAt,
+  author,
+  _id,
+}) {
+  const imageURL = cover ? `${serverURL}/${cover}` : null;
   return (
     <Card
       direction={{ base: "column", sm: "row" }}
@@ -15,31 +29,30 @@ export default function Post() {
       variant="outline"
       mb={4}
     >
-      <Image
-        objectFit="cover"
-        maxW={{ base: "100%", sm: "200px" }}
-        src="https://images.unsplash.com/photo-1667489022797-ab608913feeb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHw5fHx8ZW58MHx8fHw%3D&auto=format&fit=crop&w=800&q=60"
-        alt="Caffe Latte"
-      />
-
+      <Box width={{ base: "100%", sm: "200px" }} height="200px">
+        <Link to={`/post/${_id}`}>
+          <Image
+            width="100%"
+            height="100%"
+            objectFit="cover"
+            maxW={{ base: "100%", sm: "200px" }}
+            src={imageURL}
+            alt=""
+          />
+        </Link>
+      </Box>
       <Stack>
         <CardBody>
-          <Heading size="md">The perfect latte</Heading>
-
-          <Text py="2">
-            Caffè latte is a coffee beverage of Italian origin made with
-            espresso and steamed milk. Caffè latte is a coffee beverage of
-            Italian origin made with espresso and steamed milk.
-          </Text>
+          <Link to={`/post/${_id}`}>
+            <Heading size="md">{title}</Heading>
+          </Link>
+          <Text py="2">{summary}</Text>
           <Flex gap={2}>
             <Text py="2" fontSize="sm">
-              Author: John Doe
+              Author : {author?.email.split("@")[0]}
             </Text>
             <Text py="2" fontSize="sm">
-              02-02-2025
-            </Text>
-            <Text py="2" fontSize="sm">
-              18:19
+              {format(new Date(createdAt), "MMM d yyyy")}
             </Text>
           </Flex>
         </CardBody>

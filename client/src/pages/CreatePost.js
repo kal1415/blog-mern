@@ -46,6 +46,7 @@ export default function CreatePostPage() {
     const res = await fetch("http://localhost:4000/post", {
       body: formData,
       method: "POST",
+      credentials:'include'
     });
     await res.json();
     if(res.ok){
