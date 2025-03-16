@@ -1,43 +1,16 @@
-import { Heading, Input, Button, Box, Flex } from "@chakra-ui/react";
+import { Heading, Input, Button, Box, Flex, useToast } from "@chakra-ui/react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import ReactQuill from "react-quill-new";
 import "react-quill-new/dist/quill.snow.css";
 import { Navigate } from "react-router";
+import { formats, modules } from "../_helpers/reactQuillModules";
 
 export default function CreatePostPage() {
-  const { register, handleSubmit, setValue,reset } = useForm();
+  const { register, handleSubmit, setValue, reset } = useForm();
   const [navigate, setNavigate] = useState(false);
-  const modules = {
-    toolbar: [
-      [{ header: [1, 2, false] }],
-      ["bold", "italic", "underline", "strike", "blockquote"],
-      [
-        { list: "ordered" },
-        { list: "bullet" },
-        { indent: "-1" },
-        { indent: "+1" },
-      ],
-      ["link", "image"],
-      ["clean"],
-    ],
-  };
-
-  const formats = [
-    "header",
-    "bold",
-    "italic",
-    "underline",
-    "strike",
-    "blockquote",
-    "list",
-    "bullet",
-    "indent",
-    "link",
-    "image",
-  ];
+  const toast = useToast();
   const onSubmit = async (data) => {
-    console.log(data);
     const formData = new FormData();
     formData.set("title", data.title);
     formData.set("summary", data.summary);
@@ -46,23 +19,39 @@ export default function CreatePostPage() {
     const res = await fetch("http://localhost:4000/post", {
       body: formData,
       method: "POST",
-      credentials:'include'
+      credentials: "include",
     });
     await res.json();
-    if(res.ok){
+    if (res.ok) {
       reset();
       setNavigate(true);
+      toast({
+        position: "top",
+        title: "Post created.",
+        description: "Your post has been created successfully.",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      });
+    } else {
+      toast({
+        position: "top",
+        title: "Error.",
+        description: "There was an error creating your post.",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   };
 
-  if(navigate){
-    return <Navigate to='/' />
+  if (navigate) {
+    return <Navigate to="/" />;
   }
   return (
     <Box>
       <form onSubmit={handleSubmit(onSubmit)}>
         <Flex direction="column" gap={2}>
-          <Heading> Create post </Heading>
           <Input placeholder="Title" {...register("title")} />
           <Input placeholder="Summary" {...register("summary")} />
           <Input type="file" {...register("file")} />

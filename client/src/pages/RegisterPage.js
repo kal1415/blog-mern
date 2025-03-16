@@ -1,11 +1,13 @@
 import { Button, Flex, Heading, Input, Text, useToast } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
+import { Navigate } from "react-router";
 
 export default function RegisterPage() {
   const toast = useToast();
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm();
   const onSubmit = async (data) => {
@@ -17,6 +19,7 @@ export default function RegisterPage() {
       },
     });
     if (res.ok) {
+      reset();
       toast({
         title: "User registered successfully",
         status: "success",

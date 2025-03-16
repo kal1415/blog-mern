@@ -10,10 +10,5 @@ export default function IndexPage() {
       })
     );
   }, []);
-  console.log(posts);
-  return (
-    <> 
-      {posts.length > 0 && posts.map((post) => <Post {...post}/>)}
-    </>
-  );
+  return <>{posts.length > 0 && posts.map((post) => <Post {...post} />)}</>;
 }

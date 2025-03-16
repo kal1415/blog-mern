@@ -85,6 +85,35 @@ app.post("/post", upload.single("file"), async (req, res) => {
     res.json(postDoc);
   });
 });
+
+app.put("/post", upload.single("file"), async (req, res) => {
+  let newFilePath = null;
+  if (req.file) {
+    const { originalname, path } = req.file;
+    const parts = originalname.split(".");
+    const ext = parts[parts.length - 1];
+    newFilePath = path + "." + ext;
+    fs.renameSync(path, newFilePath);
+  }
+
+  const { token } = req.cookies;
+  jwt.verify(token, secret, {}, async (err, info) => {
+    if (err) throw err;
+    const { id, title, summary, content } = req.body;
+    const postDoc = await Post.findById(id);
+    const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+    if (!isAuthor) {
+      return res.json(400).json("You are not the author");
+    }
+    await postDoc.updateOne({
+      title,
+      summary,
+      content,
+      cover: newFilePath ? newFilePath : postDoc.cover,
+    });
+    res.json(postDoc);
+  });
+});
 app.get("/post", async (req, res) => {
   const posts = await Post.find()
     .populate("author", ["email"])
